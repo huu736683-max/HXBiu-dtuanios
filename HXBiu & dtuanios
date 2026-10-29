@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#030308">
+<title>CENTERLOCK VIP PRO MAX // SENSITIVITY</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Consolas','Courier New',monospace;user-select:none}
+:root{
+  --neon-pink:#ff2a6d;--neon-cyan:#05d9e8;--neon-purple:#d300c5;
+  --neon-yellow:#f9f002;--neon-green:#39ff14;
+  --bg-deep:#030308;--panel-bg:rgba(8,8,16,.92);
+}
+html,body{width:100%;min-height:100vh}
+body{
+  background:var(--bg-deep);color:#e8e8ff;overflow-x:hidden;
+  display:flex;justify-content:center;align-items:flex-start;
+  padding:16px 0 40px;position:relative;cursor:crosshair;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ============ NỀN ẢNH ============ */
+.bg-ff{
+  position:fixed; inset:0; 
+  background:url('bg.png') center/cover no-repeat;
+  filter:grayscale(.4) contrast(1.3) brightness(.55) saturate(1.6) hue-rotate(-15deg);
+  z-index:-10; 
+  opacity:0; 
+  transition:opacity 1.5s ease;
+  transform:scale(1.06); 
+  animation:bgBreath 12s ease-in-out infinite alternate;
+}
+.bg-ff.show { opacity:1; } /* Kích hoạt class này khi bấm INJECT */
+
+@keyframes bgBreath{from{transform:scale(1.06) translate(0,0)}to{transform:scale(1.1) translate(-6px,-4px)}}
+
+.bg-rgb{
+  position:fixed; inset:0; 
+  background:url('bg.png') center/cover no-repeat;
+  filter:grayscale(1) contrast(1.5) brightness(.5);mix-blend-mode:screen;opacity:0;z-index:-9;
+  transition:opacity 1.5s ease;
+  animation:rgbShift 3s steps(2) infinite;
+}
+.bg-rgb.show { opacity:.18; } /* Hiệu ứng RGB nhấp nháy khi bật */
+
+@keyframes rgbShift{
+  0%{transform:translate(0,0);filter:grayscale(1) brightness(.5) hue-rotate(0deg)}
+  25%{transform:translate(2px,-1px);filter:grayscale(1) brightness(.5) hue-rotate(90deg)}
+  50%{transform:translate(-2px,1px);filter:grayscale(1) brightness(.5) hue-rotate(180deg)}
+  75%{transform:translate(1px,2px);filter:grayscale(1) brightness(.5) hue-rotate(270deg)}
+  100%{transform:translate(0,0);filter:grayscale(1) brightness(.5) hue-rotate(360deg)}
+}
+
+#matrix-rain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.5}
+.scanline{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0,rgba(0,0,0,.25) 1px,transparent 1px,transparent 3px);
+  animation:scanMove 8s linear infinite}
+@keyframes scanMove{from{background-position:0 0}to{background-position:0 100px}}
+.scan-beam{position:fixed;left:0;right:0;height:120px;z-index:2;pointer-events:none;
+  background:linear-gradient(180deg,transparent,rgba(5,217,232,.08),transparent);
+  animation:beamMove 6s linear infinite}
+@keyframes beamMove{from{top:-120px}to{top:100vh}}
+.noise{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:noiseShift .4s steps(3) infinite}
+@keyframes noiseShift{0%{transform:translate(0,0)}33%{transform:translate(-2px,1px)}66%{transform:translate(1px,-2px)}100%{transform:translate(0,0)}}
+.vignette{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.9) 100%)}
+
+/* ============ PANEL ============ */
+.panel-container{position:relative;z-index:5;width:95%;max-width:560px;
+  background:var(--panel-bg);border:1px solid rgba(5,217,232,.4);border-radius:4px;
+  padding:22px;backdrop-filter:blur(8px);
+  box-shadow:0 0 0 1px rgba(255,42,109,.15),0 0 50px rgba(5,217,232,.12),
+    0 0 120px rgba(211,0,197,.08),inset 0 0 40px rgba(5,217,232,.02);
+  animation:panelFlicker 6s linear infinite}
+@keyframes panelFlicker{0%,96%,100%{opacity:1}97%{opacity:.92}98%{opacity:1}99%{opacity:.95}}
+.corner{position:absolute;width:20px;height:20px;border-color:var(--neon-pink);
+  border-style:solid;filter:drop-shadow(0 0 4px var(--neon-pink))}
+.corner.tl{top:-1px;left:-1px;border-width:2px 0 0 2px}
+.corner.tr{top:-1px;right:-1px;border-width:2px 2px 0 0}
+.corner.bl{bottom:-1px;left:-1px;border-width:0 0 2px 2px}
+.corner.br{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
+
+/* ============ HEADER ============ */
+.header{text-align:center;margin-bottom:18px;border-bottom:1px solid rgba(5,217,232,.2);
+  padding-bottom:14px;position:relative}
+.header h1{font-size:24px;letter-spacing:3px;font-weight:900;
+  background:linear-gradient(90deg,var(--neon-cyan),var(--neon-pink),var(--neon-purple),var(--neon-cyan));
+  background-size:300% 100%;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;animation:gradientShift 5s linear infinite;
+  filter:drop-shadow(0 0 10px rgba(5,217,232,.5));position:relative;white-space:nowrap}
+.header h1::before,.header h1::after{content:attr(data-text);position:absolute;left:0;top:0;
+  width:100%;-webkit-text-fill-color:initial;background:none;opacity:.7;white-space:nowrap}
+.header h1::before{color:var(--neon-cyan);animation:glitchTop 2.5s steps(2) infinite;
+  clip-path:inset(0 0 55% 0);z-index:-1}
+.header h1::after{color:var(--neon-pink);animation:glitchBot 2s steps(2) infinite;
+  clip-path:inset(55% 0 0 0);z-index:-1}
+@keyframes glitchTop{0%,100%{transform:translate(0)}20%{transform:translate(-2px,-1px)}40%{transform:translate(2px,1px)}60%{transform:translate(-1px,2px)}80%{transform:translate(1px,-1px)}}
+@keyframes glitchBot{0%,100%{transform:translate(0)}25%{transform:translate(2px,1px)}50%{transform:translate(-2px,-1px)}75%{transform:translate(1px,2px)}}
+@keyframes gradientShift{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+.header p{font-size:9px;color:#6a6a8a;margin-top:8px;letter-spacing:3px}
+.admin-badge{display:inline-flex;align-items:center;gap:8px;margin-top:10px;
+  padding:5px 16px;background:linear-gradient(90deg,rgba(255,42,109,.1),rgba(211,0,197,.1));
+  border:1px solid rgba(255,42,109,.6);border-radius:3px;font-size:11px;color:var(--neon-pink);
+  font-weight:bold;letter-spacing:2px;
+  box-shadow:0 0 15px rgba(255,42,109,.25),inset 0 0 10px rgba(255,42,109,.05)}
+.admin-badge::before{content:'';width:7px;height:7px;border-radius:50%;
+  background:var(--neon-green);box-shadow:0 0 8px var(--neon-green);
+  animation:pulseDot 1.2s ease-in-out infinite}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+
+/* ============ TABS CHÍNH ============ */
+.main-tabs{display:flex;gap:4px;padding:4px;margin-bottom:14px;
+  background:rgba(10,5,15,.6);border:1px solid rgba(5,217,232,.2);border-radius:4px;overflow-x:auto}
+.main-tabs::-webkit-scrollbar{display:none}
+.mtab{flex:1;min-width:90px;padding:10px 6px;background:transparent;border:1px solid transparent;
+  border-radius:3px;font-size:11px;font-weight:800;color:#7a6a8a;transition:.2s;
+  white-space:nowrap;letter-spacing:.5px;text-transform:uppercase;cursor:pointer}
+.mtab.active{background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));
+  border-color:var(--neon-pink);color:#fff;
+  box-shadow:0 0 20px rgba(255,42,109,.5),inset 0 0 12px rgba(255,255,255,.15)}
+.mtab:active{transform:scale(.97)}
+
+/* ============ SUB-PANEL ============ */
+.sub-panel{display:none;animation:fade .35s}
+.sub-panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ============ FEATURES GRID (tab HOME) ============ */
+.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.feature-box{background:rgba(255,255,255,.015);border:1px solid rgba(5,217,232,.15);
+  border-radius:4px;padding:13px;display:flex;justify-content:space-between;align-items:center;
+  transition:all .25s;position:relative;overflow:hidden}
+.feature-box::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(5,217,232,.08),transparent);transition:left .5s}
+.feature-box:hover::after{left:100%}
+.feature-box:hover{border-color:rgba(5,217,232,.5);background:rgba(5,217,232,.03)}
+.feature-box.active{background:linear-gradient(135deg,rgba(255,42,109,.1),rgba(211,0,197,.07));
+  border-color:var(--neon-pink);
+  box-shadow:0 0 20px rgba(255,42,109,.25),inset 0 0 15px rgba(255,42,109,.05)}
+.feature-box.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--neon-pink);box-shadow:0 0 10px var(--neon-pink);
+  animation:accentPulse 1.5s ease-in-out infinite}
+@keyframes accentPulse{0%,100%{opacity:1}50%{opacity:.5}}
+.feature-info h3{font-size:13px;color:#e8e8ff;font-weight:700;letter-spacing:.5px}
+.feature-box.active .feature-info h3{color:var(--neon-pink);text-shadow:0 0 8px rgba(255,42,109,.6)}
+.feature-info p{font-size:9px;color:#5a5a7a;margin-top:3px;letter-spacing:.4px;text-transform:uppercase}
+.switch{position:relative;display:inline-block;width:44px;height:22px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider-sw{position:absolute;cursor:pointer;inset:0;background:#14142a;
+  transition:.3s;border-radius:3px;border:1px solid #2a2a45}
+.slider-sw:before{position:absolute;content:"";height:14px;width:14px;left:3px;bottom:3px;
+  background:#4a4a6a;transition:.3s cubic-bezier(.4,0,.2,1);border-radius:2px}
+input:checked + .slider-sw{background:linear-gradient(90deg,rgba(5,217,232,.2),rgba(255,42,109,.3));
+  border-color:var(--neon-pink);box-shadow:0 0 12px rgba(255,42,109,.4)}
+input:checked + .slider-sw:before{transform:translateX(22px);background:var(--neon-pink);
+  box-shadow:0 0 10px var(--neon-pink)}
+
+/* ============ BUTTONS ============ */
+.btn{width:100%;padding:13px;font-size:13px;font-weight:900;letter-spacing:3px;
+  text-transform:uppercase;border-radius:4px;cursor:pointer;transition:all .3s;
+  position:relative;overflow:hidden;border:1px solid var(--neon-cyan);
+  background:linear-gradient(90deg,rgba(5,217,232,.08),rgba(255,42,109,.12),rgba(211,0,197,.08));
+  background-size:200% 100%;color:var(--neon-cyan);
+  box-shadow:0 0 18px rgba(5,217,232,.15),inset 0 0 15px rgba(5,217,232,.03)}
+.btn:hover{background-position:100% 50%;color:#fff;border-color:var(--neon-pink);
+  box-shadow:0 0 30px rgba(255,42,109,.5),0 0 60px rgba(5,217,232,.25);text-shadow:0 0 10px var(--neon-pink)}
+.btn:active{transform:scale(.98)}
+.btn.sm{padding:10px;font-size:11px;letter-spacing:1.5px}
+.btn.grad{background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));
+  color:#fff;border-color:var(--neon-pink);box-shadow:0 4px 20px rgba(255,42,109,.5)}
+.btn.grad:hover{box-shadow:0 6px 28px rgba(255,42,109,.7)}
+.btn.ghost{background:rgba(10,5,10,.6);color:#8a7a8a;border-color:rgba(255,255,255,.15)}
+.btn.ghost:hover{color:var(--neon-pink);border-color:var(--neon-pink)}
+.btn.danger{background:rgba(248,113,113,.1);color:#f87171;border-color:rgba(248,113,113,.4)}
+
+/* ============ TERMINAL ============ */
+.terminal-box{background:rgba(2,2,8,.96);border:1px solid rgba(5,217,232,.25);
+  border-radius:4px;padding:12px;box-shadow:inset 0 0 30px rgba(0,0,0,.9),0 0 25px rgba(5,217,232,.05)}
+.terminal-header{display:flex;justify-content:space-between;font-size:10px;color:var(--neon-cyan);
+  border-bottom:1px solid rgba(5,217,232,.15);padding-bottom:8px;margin-bottom:8px;
+  letter-spacing:1.5px;text-shadow:0 0 6px rgba(5,217,232,.5)}
+#active-count{color:var(--neon-yellow);text-shadow:0 0 8px rgba(249,240,2,.6)}
+.terminal-content{height:150px;overflow-y:auto;font-size:11px;color:#9a9ac0;
+  line-height:1.6;scroll-behavior:smooth}
+.terminal-content::-webkit-scrollbar{width:4px}
+.terminal-content::-webkit-scrollbar-track{background:transparent}
+.terminal-content::-webkit-scrollbar-thumb{background:rgba(5,217,232,.4);border-radius:2px}
+.log-line{margin-bottom:4px;word-break:break-all;animation:logIn .25s ease-out}
+@keyframes logIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+.log-success{color:var(--neon-cyan);text-shadow:0 0 6px rgba(5,217,232,.4)}
+.log-info{color:#7a7aa0}
+.log-warn{color:var(--neon-yellow);text-shadow:0 0 6px rgba(249,240,2,.3)}
+.log-error{color:var(--neon-pink)}
+
+/* ============ SENS TAB: CARD ============ */
+.card{background:linear-gradient(135deg,rgba(20,12,20,.9),rgba(15,8,15,.9));
+  border:1px solid rgba(5,217,232,.2);border-radius:6px;padding:14px;margin-bottom:10px;
+  position:relative;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))}
+.card::before{content:'';position:absolute;top:0;left:0;width:40px;height:2px;
+  background:var(--neon-pink);box-shadow:0 0 8px var(--neon-pink)}
+.card::after{content:'';position:absolute;bottom:0;right:0;width:40px;height:2px;
+  background:var(--neon-purple);box-shadow:0 0 8px var(--neon-purple)}
+.ct{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:900;
+  margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;color:#e8e8ff}
+.ct .n{width:22px;height:22px;background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));
+  color:#fff;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;clip-path:polygon(0 0,100% 0,100% 75%,75% 100%,0 100%)}
+.cd{font-size:11px;color:#8a7a9a;margin-bottom:12px;line-height:1.5}
+
+/* Version grid */
+.vg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vc{padding:14px 10px;background:linear-gradient(135deg,rgba(255,42,109,.05),rgba(211,0,197,.05));
+  border:2px solid rgba(255,42,109,.2);border-radius:4px;text-align:center;cursor:pointer;
+  transition:.3s;position:relative;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}
+.vc.active{border-color:var(--neon-pink);
+  background:linear-gradient(135deg,rgba(255,42,109,.2),rgba(211,0,197,.15));
+  box-shadow:0 0 24px rgba(255,42,109,.4),inset 0 0 20px rgba(255,42,109,.1)}
+.vc:active{transform:scale(.97)}
+.vi{font-size:24px;display:block;margin-bottom:6px;filter:drop-shadow(0 0 6px rgba(255,42,109,.5))}
+.vn{font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:#e8e8ff}
+.vd{font-size:9px;color:#8a7a9a;margin-top:3px;letter-spacing:.5px;text-transform:uppercase}
+.vc.active .vn{color:var(--neon-pink);text-shadow:0 0 12px rgba(255,42,109,.8)}
+
+/* Form */
+.f{margin-bottom:12px}
+.f:last-child{margin-bottom:0}
+.f label{display:block;font-size:10px;font-weight:800;color:#9a8aaa;
+  text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.f input,.f select{width:100%;padding:11px 13px;background:rgba(10,5,15,.8);
+  border:1px solid rgba(5,217,232,.2);border-radius:3px;color:#e8e8ff;font-size:13px;
+  -webkit-appearance:none;appearance:none;transition:.2s;font-weight:600}
+.f select{background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2305d9e8' stroke-width='2.5'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e");
+  background-repeat:no-repeat;background-position:right 13px center;padding-right:36px;
+  background-color:rgba(10,5,15,.8)}
+.f input:focus,.f select:focus{outline:none;border-color:var(--neon-cyan);
+  box-shadow:0 0 0 3px rgba(5,217,232,.15),0 0 20px rgba(5,217,232,.3)}
+.f input::placeholder{color:#5a4a6a}
+
+/* Segmented */
+.seg{display:flex;gap:3px;padding:3px;background:rgba(10,5,15,.8);
+  border:1px solid rgba(5,217,232,.2);border-radius:3px}
+.seg button{flex:1;padding:9px 4px;background:transparent;border-radius:2px;
+  font-size:10px;font-weight:800;color:#7a6a8a;transition:.2s;text-transform:uppercase;
+  letter-spacing:.5px;border:none;cursor:pointer}
+.seg button.active{background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));
+  color:#fff;box-shadow:0 2px 12px rgba(255,42,109,.5);text-shadow:0 0 8px rgba(255,255,255,.3)}
+
+/* Sliders */
+.sr{margin-bottom:10px;padding:12px;background:linear-gradient(135deg,rgba(10,5,15,.9),rgba(20,10,20,.9));
+  border:1px solid rgba(255,255,255,.08);border-radius:4px;position:relative;overflow:hidden;
+  --accent:var(--neon-pink)}
+.sr:last-child{margin-bottom:0}
+.sr::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  background:var(--accent);box-shadow:0 0 12px var(--accent);opacity:.9}
+.sr[data-id="general"]{--accent:#ff2a6d}
+.sr[data-id="redDot"]{--accent:#ff9500}
+.sr[data-id="scope2x"]{--accent:#f9f002}
+.sr[data-id="scope4x"]{--accent:#22d16b}
+.sr[data-id="sniper"]{--accent:#05d9e8}
+.sr[data-id="freeLook"]{--accent:#d300c5}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.sn{font-size:12px;font-weight:800;flex:1;letter-spacing:.5px;color:#e8e8ff}
+.sn .ico{margin-right:4px;filter:drop-shadow(0 0 4px var(--accent))}
+.sv{font-family:'Courier New',monospace;font-size:15px;font-weight:900;color:var(--accent);
+  min-width:46px;text-align:center;padding:3px 8px;background:rgba(0,0,0,.6);
+  border:1px solid var(--accent);border-radius:3px;
+  box-shadow:0 0 10px color-mix(in srgb,var(--accent) 40%,transparent);text-shadow:0 0 8px var(--accent)}
+.sc{display:flex;gap:3px;flex-shrink:0}
+.sb{width:28px;height:28px;background:rgba(0,0,0,.6);border:1px solid var(--accent);
+  color:var(--accent);font-size:15px;font-weight:900;display:flex;align-items:center;
+  justify-content:center;line-height:1;border-radius:3px;transition:.15s;
+  font-family:'Courier New',monospace;cursor:pointer}
+.sb:hover{background:var(--accent);color:#000;box-shadow:0 0 12px var(--accent)}
+.sb:active{transform:scale(.9)}
+input[type="range"]{width:100%;height:28px;-webkit-appearance:none;appearance:none;
+  background:transparent;cursor:pointer;touch-action:manipulation}
+input[type="range"]::-webkit-slider-runnable-track{height:5px;border-radius:2px;
+  background:linear-gradient(90deg,var(--accent) 0%,var(--accent) var(--pct,50%),rgba(255,255,255,.1) var(--pct,50%),rgba(255,255,255,.1) 100%);
+  box-shadow:0 0 8px color-mix(in srgb,var(--accent) 40%,transparent)}
+input[type="range"]::-moz-range-track{height:5px;background:rgba(255,255,255,.1);border-radius:2px}
+input[type="range"]::-moz-range-progress{height:5px;background:var(--accent);border-radius:2px}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+  width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#fff,var(--accent) 60%);
+  border:2px solid #fff;box-shadow:0 0 12px var(--accent),0 2px 8px rgba(0,0,0,.8);
+  margin-top:-7.5px;cursor:pointer}
+input[type="range"]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#fff,var(--accent) 60%);
+  border:2px solid #fff;box-shadow:0 0 12px var(--accent),0 2px 8px rgba(0,0,0,.8);cursor:pointer}
+
+/* Buttons row */
+.br{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:8px}
+
+/* Tune grid */
+.tg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:10px}
+.tb{padding:11px;background:linear-gradient(135deg,rgba(255,42,109,.05),rgba(211,0,197,.05));
+  border:1px solid rgba(255,42,109,.2);border-radius:3px;font-size:11px;font-weight:800;
+  color:#9a8aaa;text-align:center;transition:.2s;line-height:1.4;letter-spacing:.5px;
+  cursor:pointer;
+  clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px))}
+.tb:hover{border-color:var(--neon-pink);color:var(--neon-pink);
+  box-shadow:0 0 16px rgba(255,42,109,.3)}
+.tb:active{transform:scale(.96)}
+.tb small{font-size:9px;opacity:.7;font-weight:500;display:block;margin-top:2px;
+  text-transform:uppercase;letter-spacing:1px}
+
+/* Profiles */
+.pi{display:flex;align-items:center;gap:8px;padding:11px;
+  background:linear-gradient(135deg,rgba(10,5,15,.9),rgba(20,10,20,.9));
+  border:1px solid rgba(5,217,232,.2);border-radius:3px;margin-bottom:6px;
+  border-left:3px solid var(--neon-pink)}
+.pif{flex:1;min-width:0}
+.pn{font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:#e8e8ff;letter-spacing:.3px}
+.pm{font-size:10px;color:#8a7a9a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-family:'Courier New',monospace;margin-top:2px}
+.pa{display:flex;gap:4px;flex-shrink:0}
+.ib{width:32px;height:32px;background:rgba(0,0,0,.6);border:1px solid rgba(255,42,109,.3);
+  color:var(--neon-pink);display:flex;align-items:center;justify-content:center;font-size:14px;
+  transition:.15s;border-radius:3px;cursor:pointer}
+.ib:hover{background:var(--neon-pink);color:#000;box-shadow:0 0 12px rgba(255,42,109,.6)}
+.ib:active{transform:scale(.9)}
+.es{padding:30px 16px;text-align:center;color:#7a6a8a;font-size:11px;letter-spacing:.5px}
+.es .big{font-size:40px;display:block;margin-bottom:8px;opacity:.4;filter:drop-shadow(0 0 8px var(--neon-pink))}
+
+/* Notice */
+.nt{padding:11px 13px;background:rgba(249,240,2,.06);border-left:3px solid var(--neon-yellow);
+  border-radius:3px;font-size:11px;color:var(--neon-yellow);line-height:1.55;
+  margin-bottom:10px;letter-spacing:.3px}
+.nt.info{background:rgba(5,217,232,.06);border-left-color:var(--neon-cyan);color:var(--neon-cyan)}
+.nt strong{color:#fff;text-transform:uppercase;font-size:10px;letter-spacing:1px;
+  display:block;margin-bottom:3px}
+
+/* Guide */
+.gs{display:flex;gap:12px;margin-bottom:14px}
+.gs:last-child{margin-bottom:0}
+.gn{flex-shrink:0;width:28px;height:28px;background:linear-gradient(135deg,var(--neon-pink),var(--neon-purple));
+  color:#fff;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:center;
+  clip-path:polygon(0 0,100% 0,100% 70%,70% 100%,0 100%)}
+.gc h4{font-size:12px;font-weight:900;margin-bottom:5px;text-transform:uppercase;
+  letter-spacing:1px;color:var(--neon-pink)}
+.gc p,.gc li{font-size:12px;color:#8a7a9a;line-height:1.6;margin-bottom:3px}
+.gc ul{padding-left:16px;margin-top:6px}
+.gc strong{color:#e8e8ff;font-weight:800}
+
+/* ============ TOAST ============ */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);
+  background:linear-gradient(135deg,rgba(20,10,20,.98),rgba(30,15,25,.98));color:#e8e8ff;
+  padding:12px 22px;font-size:12px;font-weight:800;z-index:9999;
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);max-width:calc(100vw - 40px);
+  text-align:center;pointer-events:none;letter-spacing:.5px;text-transform:uppercase;
+  border:1px solid var(--neon-pink);border-radius:4px;
+  box-shadow:0 0 32px rgba(255,42,109,.5),0 8px 32px rgba(0,0,0,.8)}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.success{border-color:var(--neon-green);box-shadow:0 0 32px rgba(57,255,20,.5)}
+#toast.error{border-color:#f87171;box-shadow:0 0 32px rgba(248,113,113,.5)}
+#toast.warn{border-color:var(--neon-yellow);box-shadow:0 0 32px rgba(249,240,2,.5)}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:420px){
+  .header h1{font-size:18px;letter-spacing:2px}
+  .panel-container{padding:16px}
+  .br,.tg{grid-template-columns:1fr 1fr}
+  .features-grid{gap:8px}
+  .feature-box{padding:10px}
+}
+</style>
+</head>
+<body>
+
+<!-- ẢNH NỀN NẰM NGOÀI, ẨN MẶC ĐỊNH BẰNG OPACITY, CHỈ HIỆN KHI BẤM INJECT -->
+<div class="bg-ff" id="bgMain"></div>
+<div class="bg-rgb" id="bgRgb"></div>
+
+<canvas id="matrix-rain"></canvas>
+<div class="scanline"></div>
+<div class="scan-beam"></div>
+<div class="noise"></div>
+<div class="vignette"></div>
+
+<div id="toast"></div>
+
+<div class="panel-container">
+  <span class="corner tl"></span>
+  <span class="corner tr"></span>
+  <span class="corner bl"></span>
+  <span class="corner br"></span>
+
+  <div class="header">
+    <h1 data-text="CENTERLOCK VIP PRO MAX">CENTERLOCK VIP PRO MAX</h1>
+    <p>ROOT ACCESS // SYSTEM OVERRIDE</p>
+    <div class="admin-badge">ADMIN: H X Biu</div>
+  </div>
+
+  <!-- MAIN TABS -->
+  <div class="main-tabs">
+    <button class="mtab active" data-mtab="home" type="button">⚡ HOME</button>
+    <button class="mtab" data-mtab="sens" type="button">🎯 SENS</button>
+  </div>
+
+  <!-- ============ TAB HOME ============ -->
+  <div class="sub-panel active" id="sub-home">
+    <div class="features-grid">
+      <div class="feature-box" id="box-nhe-tam">
+        <div class="feature-info"><h3>Nhẹ Tâm</h3><p>Giảm ma sát tọa độ</p></div>
+        <label class="switch"><input type="checkbox" id="nhe-tam" onchange="triggerCommand('nhe-tam','Nhẹ Tâm')"><span class="slider-sw"></span></label>
+      </div>
+      <div class="feature-box" id="box-fix-rung">
+        <div class="feature-info"><h3>Fix Rung</h3><p>Khử lệch Jitter</p></div>
+        <label class="switch"><input type="checkbox" id="fix-rung" onchange="triggerCommand('fix-rung','Fix Rung')"><span class="slider-sw"></span></label>
+      </div>
+      <div class="feature-box" id="box-aimlock">
+        <div class="feature-info"><h3>Aimlock</h3><p>Khóa cứng mục tiêu</p></div>
+        <label class="switch"><input type="checkbox" id="aimlock" onchange="triggerCommand('aimlock','Aimlock')"><span class="slider-sw"></span></label>
+      </div>
+      <div class="feature-box" id="box-bam-dau">
+        <div class="feature-info"><h3>Bám Đầu</h3><p>Tự động bám vector</p></div>
+        <label class="switch"><input type="checkbox" id="bam-dau" onchange="triggerCommand('bam-dau','Bám Đầu')"><span class="slider-sw"></span></label>
+      </div>
+      <div class="feature-box" id="box-buff-fps">
+        <div class="feature-info"><h3>Buff FPS</h3><p>Tối ưu hóa khung hình</p></div>
+        <label class="switch"><input type="checkbox" id="buff-fps" onchange="triggerCommand('buff-fps','Buff FPS')"><span class="slider-sw"></span></label>
+      </div>
+      <div class="feature-box" id="box-aim-head">
+        <div class="feature-info"><h3>Aim Head</h3><p>Tập trung vùng quét sọ</p></div>
+        <label class="switch"><input type="checkbox" id="aim-head" onchange="triggerCommand('aim-head','Aim Head')"><span class="slider-sw"></span></label>
+      </div>
+    </div>
+
+    <div style="margin-bottom:14px">
+      <button class="btn" onclick="startExecution()">► INJECT SYSTEM</button>
+    </div>
+
+    <div class="terminal-box">
+      <div class="terminal-header">
+        <span>ROOT SHELL // LIVE OUTPUT</span>
+        <span id="active-count">ACTIVE: 0/6</span>
+      </div>
+      <div class="terminal-content" id="terminal-log">
+        <div class="log-line log-info">[INFO] Xác thực quyền Admin: H X Biu</div>
+        <div class="log-line log-info">[INFO] Tải tài nguyên bg.png thành công...</div>
+        <div class="log-line log-info">[INFO] Khởi tạo môi trường sandbox...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB SENS ============ -->
+  <div class="sub-panel" id="sub-sens">
+
+    <!-- Sub-tabs trong SENS -->
+    <div class="main-tabs" style="margin-bottom:12px">
+      <button class="mtab active" data-stab="setup" type="button">⚙️ Setup</button>
+      <button class="mtab" data-stab="tune" type="button">🎚️ Sens</button>
+      <button class="mtab" data-stab="profiles" type="button">💾 Profile</button>
+      <button class="mtab" data-stab="guide" type="button">📖 Guide</button>
+    </div>
+
+    <!-- SUB SETUP -->
+    <div class="sub-panel active" id="stab-setup">
+      <div class="card">
+        <div class="ct"><span class="n">01</span> Phiên bản game</div>
+        <div class="cd">FF thường và FF MAX có thể có cảm giác kéo tâm khác nhau.</div>
+        <div class="vg">
+          <div class="vc active" data-version="ff"><span class="vi">🔥</span><div class="vn">FF Thường</div><div class="vd">Classic</div></div>
+          <div class="vc" data-version="ffmax"><span class="vi">⚡</span><div class="vn">FF MAX</div><div class="vd">Ultra HD</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ct"><span class="n">02</span> Thiết bị</div>
+        <div class="cd">Nhập model bất kỳ — không giới hạn.</div>
+        <div class="f">
+          <label for="brandSelect">Hãng máy</label>
+          <select id="brandSelect">
+            <option value="Apple">Apple</option><option value="Samsung">Samsung</option>
+            <option value="Xiaomi">Xiaomi</option><option value="Redmi">Redmi</option>
+            <option value="OPPO">OPPO</option><option value="vivo">vivo</option>
+            <option value="realme">realme</option><option value="Huawei">Huawei</option>
+            <option value="HONOR">HONOR</option><option value="Google Pixel">Google Pixel</option>
+            <option value="OnePlus">OnePlus</option><option value="Tecno">Tecno</option>
+            <option value="Infinix">Infinix</option><option value="Khác">Khác</option>
+          </select>
+        </div>
+        <div class="f">
+          <label for="modelInput">Model (nhập tự do)</label>
+          <input type="text" id="modelInput" placeholder="VD: iPhone 14 Pro Max..." maxlength="80">
+        </div>
+        <div class="f">
+          <label for="screenSize">Màn hình (inch) — tùy chọn</label>
+          <input type="number" id="screenSize" placeholder="VD: 6.1" min="3" max="15" step="0.1" inputmode="decimal">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ct"><span class="n">03</span> Màn hình &amp; FPS</div>
+        <div class="f">
+          <label for="refreshRate">Tần số quét</label>
+          <select id="refreshRate">
+            <option value="60">60 Hz</option><option value="90">90 Hz</option>
+            <option value="120" selected>120 Hz</option><option value="144">144 Hz</option>
+            <option value="165">165 Hz</option><option value="custom">Khác…</option>
+          </select>
+        </div>
+        <div class="f" id="customRefreshField" style="display:none">
+          <label for="customRefresh">Tần số (Hz)</label>
+          <input type="number" id="customRefresh" placeholder="VD: 165" min="30" max="240" inputmode="numeric">
+        </div>
+        <div class="f">
+          <label for="fpsGame">FPS game hỗ trợ</label>
+          <select id="fpsGame">
+            <option value="30">30 FPS</option><option value="60" selected>60 FPS</option>
+            <option value="90">90 FPS</option><option value="120">120 FPS</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ct"><span class="n">04</span> Phong cách chơi</div>
+        <div class="seg" id="playstyleGroup">
+          <button type="button" data-playstyle="rush">🔥 Rush</button>
+          <button type="button" data-playstyle="balanced" class="active">⚖️ Cân bằng</button>
+          <button type="button" data-playstyle="control">🎯 Control</button>
+          <button type="button" data-playstyle="sniper">🔭 Sniper</button>
+        </div>
+      </div>
+
+      <button class="btn grad" id="btnGenerate" type="button">⚡ TẠO CẤU HÌNH</button>
+
+      <div class="nt info" style="margin-top:10px"><strong>Lưu ý</strong>Cấu hình là công thức tham khảo — không phải dữ liệu kiểm thử theo từng model điện thoại.</div>
+    </div>
+
+    <!-- SUB TUNE -->
+    <div class="sub-panel" id="stab-tune">
+      <div class="card">
+        <div class="ct"><span class="n">05</span> Cấu hình độ nhạy</div>
+        <div class="cd">Kéo thanh trượt hoặc dùng +/− để chỉnh (0–200).</div>
+        <div id="slidersContainer"></div>
+      </div>
+
+      <div class="card">
+        <div class="ct"><span class="n">06</span> Tinh chỉnh sau khi thử</div>
+        <div class="cd">Chơi thử 1–2 trận rồi dùng các nút này. Có nút hoàn tác.</div>
+        <div class="tg">
+          <button class="tb" data-tune="aimHigh" type="button">🎯 Kéo tâm quá cao<small>Giảm nhẹ</small></button>
+          <button class="tb" data-tune="aimLow" type="button">🎯 Kéo tâm quá thấp<small>Tăng nhẹ</small></button>
+          <button class="tb" data-tune="shake" type="button">📳 Tâm bị rung<small>Giảm nhẹ</small></button>
+          <button class="tb" data-tune="slow" type="button">🐢 Xoay chậm<small>Tăng nhẹ</small></button>
+        </div>
+        <button class="btn ghost sm" id="btnUndoTune" type="button" style="width:100%">↩️ Hoàn tác lần tinh chỉnh</button>
+      </div>
+
+      <div class="card">
+        <div class="ct"><span class="n">07</span> Xuất &amp; lưu</div>
+        <div class="br">
+          <button class="btn ghost sm" id="btnCopy" type="button">📋 Sao chép</button>
+          <button class="btn ghost sm" id="btnExportTxt" type="button">📄 TXT</button>
+          <button class="btn ghost sm" id="btnExportJson" type="button">🗂️ JSON</button>
+          <button class="btn ghost sm" id="btnReset" type="button">♻️ Đặt lại</button>
+          <button class="btn ghost sm" id="btnRandomize" type="button">🎲 Random</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUB PROFILES -->
+    <div class="sub-panel" id="stab-profiles">
+      <div class="card">
+        <div class="ct"><span class="n">08</span> Lưu hồ sơ</div>
+        <div class="cd">Dữ liệu lưu trong localStorage trình duyệt.</div>
+        <div class="f">
+          <label for="profileName">Tên hồ sơ</label>
+          <input type="text" id="profileName" placeholder="VD: iPhone 14 - Rank thử" maxlength="60">
+        </div>
+        <button class="btn grad" id="btnSaveProfile" type="button">💾 LƯU HỒ SƠ</button>
+      </div>
+
+      <div class="card">
+        <div class="ct"><span class="n">09</span> Hồ sơ đã lưu</div>
+        <div id="profilesList"></div>
+        <button class="btn danger sm" id="btnClearAllProfiles" type="button" style="margin-top:8px;width:100%">🗑️ XOÁ TẤT CẢ</button>
+      </div>
+    </div>
+
+    <!-- SUB GUIDE -->
+    <div class="sub-panel" id="stab-guide">
+      <div class="card">
+        <div class="ct">📖 HƯỚNG DẪN SỬ DỤNG</div>
+        <div class="gs"><div class="gn">1</div><div class="gc"><h4>Chọn phiên bản game</h4><p>Tab <strong>Setup</strong> → chọn <strong>FF Thường</strong> hoặc <strong>FF MAX</strong>.</p></div></div>
+        <div class="gs"><div class="gn">2</div><div class="gc"><h4>Nhập thông tin thiết bị</h4><p>Chọn hãng, nhập model, tần số quét và FPS game thực tế.</p></div></div>
+        <div class="gs"><div class="gn">3</div><div class="gc"><h4>Tạo cấu hình</h4><p>Bấm <strong>⚡ Tạo cấu hình</strong>.</p></div></div>
+        <div class="gs"><div class="gn">4</div><div class="gc"><h4>Áp dụng vào Free Fire</h4><p>Cài đặt → Độ nhạy → nhập giá trị từ tab <strong>Sens</strong>.</p></div></div>
+        <div class="gs"><div class="gn">5</div><div class="gc"><h4>Thử và tinh chỉnh</h4><p>Chơi thử 1–2 trận rồi dùng nút tinh chỉnh. Có nút hoàn tác.</p></div></div>
+        <div class="gs"><div class="gn">6</div><div class="gc"><h4>Lưu và tải lại</h4><p>Tab <strong>Profile</strong> → đặt tên → <strong>Lưu hồ sơ</strong>.</p></div></div>
+        <div class="nt"><strong>Miễn trừ</strong>Công cụ tham khảo. Không đảm bảo headshot hay thắng trận.</div>
+      </div>
+    </div>
+
+  </div><!-- /sub-sens -->
+
+</div>
+
+<script>
+/* ============================================================
+   MATRIX RAIN
+   ============================================================ */
+(function(){
+  var canvas=document.getElementById('matrix-rain');
+  var ctx=canvas.getContext('2d');
+  var w,h,cols,drops;
+  var chars='01アイウエオカキクケコサシスセソCENTERLOCKVIPPROMAXHXBIU<>{}[]#$%&*';
+  var fontSize=14;
+  function resize(){
+    w=canvas.width=window.innerWidth;
+    h=canvas.height=window.innerHeight;
+    cols=Math.floor(w/fontSize);
+    drops=[];for(var i=0;i<cols;i++)drops.push(Math.random()*-100);
+  }
+  function draw(){
+    ctx.fillStyle='rgba(3,3,8,.08)';
+    ctx.fillRect(0,0,w,h);
+    ctx.font=fontSize+'px monospace';
+    for(var i=0;i<cols;i++){
+      var ch=chars[Math.floor(Math.random()*chars.length)];
+      var y=drops[i]*fontSize;
+      ctx.fillStyle=Math.random()>.85?'rgba(255,42,109,.8)':'rgba(5,217,232,.55)';
+      ctx.shadowBlur=6;ctx.shadowColor=ctx.fillStyle;
+      ctx.fillText(ch,i*fontSize,y);
+      if(y>h&&Math.random()>.975)drops[i]=0;
+      drops[i]++;
+    }
+    ctx.shadowBlur=0;
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);
+  resize();draw();
+})();
+
+/* ============================================================
+   HOME TAB - FEATURE LOGIC
+   ============================================================ */
+function triggerCommand(id,name){
+  var checkbox=document.getElementById(id);
+  var box=document.getElementById('box-'+id);
+  var terminalLog=document.getElementById('terminal-log');
+  if(!checkbox||!box||!terminalLog)return;
+  var t=new Date().toLocaleTimeString('vi-VN',{hour12:false});
+  if(checkbox.checked){
+    box.classList.add('active');
+    terminalLog.innerHTML+='<div class="log-line log-info">['+t+'] [INJECT] Khởi chạy module: '+name+'...</div>';
+    setTimeout(function(){
+      terminalLog.innerHTML+='<div class="log-line log-success">['+t+'] [OK] Module \''+name+'\' đã nạp thành công!</div>';
+      terminalLog.scrollTop=terminalLog.scrollHeight;
+    },400);
+  }else{
+    box.classList.remove('active');
+    terminalLog.innerHTML+='<div class="log-line log-warn">['+t+'] [KILL] Giải phóng tiến trình: '+name+'</div>';
+  }
+  updateActiveCount();
+  terminalLog.scrollTop=terminalLog.scrollHeight;
+}
+function updateActiveCount(){
+  var checked=document.querySelectorAll('#sub-home .switch input[type="checkbox"]:checked');
+  var el=document.getElementById('active-count');
+  if(el)el.innerText='ACTIVE: '+checked.length+'/6';
+}
+function startExecution(){
+  var terminalLog=document.getElementById('terminal-log');
+  if(!terminalLog)return;
+  var t=new Date().toLocaleTimeString('vi-VN',{hour12:false});
+
+  // === HIỆN ẢNH NỀN KHI BẤM INJECT ===
+  var bgMain = document.getElementById('bgMain');
+  var bgRgb = document.getElementById('bgRgb');
+  if (bgMain) bgMain.classList.add('show');
+  if (bgRgb) bgRgb.classList.add('show');
+  terminalLog.innerHTML+='<div class="log-line log-success">['+t+'] [BG] Kích hoạt wallpaper engine...</div>';
+
+  // === CHẠY LOGIC CŨ ===
+  terminalLog.innerHTML+='<div class="log-line log-info">['+t+'] [SYSTEM] Admin H X Biu thực thi tổng lệnh...</div>';
+  var checked=document.querySelectorAll('#sub-home .switch input[type="checkbox"]:checked');
+  if(checked.length===0){
+    terminalLog.innerHTML+='<div class="log-line log-warn">['+t+'] [WARN] Chưa có module nào được kích hoạt!</div>';
+  }else{
+    checked.forEach(function(box){
+      var name=box.parentElement.previousElementSibling.querySelector('h3').innerText;
+      terminalLog.innerHTML+='<div class="log-line log-success">['+t+'] [OK] Module \''+name+'\' hoạt động ổn định.</div>';
+    });
+    terminalLog.innerHTML+='<div class="log-line log-success">['+t+'] [DONE] Hệ thống sẵn sàng. Tổng module: '+checked.length+'.</div>';
+  }
+  terminalLog.scrollTop=terminalLog.scrollHeight;
+}
+
+/* ============================================================
+   MAIN TABS (HOME / SENS)
+   ============================================================ */
+(function(){
+  var tabs=document.querySelectorAll('.main-tabs [data-mtab]');
+  tabs.forEach(function(tab){
+    tab.addEventListener('click',function(){
+      tabs.forEach(function(x){x.classList.remove('active')});
+      tab.classList.add('active');
+      document.querySelectorAll('#sub-home, #sub-sens').forEach(function(p){p.classList.remove('active')});
+      var p=document.getElementById('sub-'+tab.getAttribute('data-mtab'));
+      if(p)p.classList.add('active');
+    });
+  });
+})();
+
+/* ============================================================
+   SENS APP - FULL LOGIC
+   ============================================================ */
+(function(){
+  'use strict';
+  var STORAGE_KEY='hxbiu_profiles_v1';
+  var SLIDERS=[
+    {id:'general',name:'Tổng quan',icon:'🎮'},
+    {id:'redDot',name:'Red Dot',icon:'🔴'},
+    {id:'scope2x',name:'Ống ngắm 2x',icon:'🔭'},
+    {id:'scope4x',name:'Ống ngắm 4x',icon:'🎯'},
+    {id:'sniper',name:'Súng ngắm',icon:'🎯'},
+    {id:'freeLook',name:'Nhìn xung quanh',icon:'👀'}
+  ];
+  var DEF={general:90,redDot:85,scope2x:80,scope4x:75,sniper:60,freeLook:100};
+  var BRAND_PRESET={
+    'Apple':{touch:1.00,tilt:1.00},'Samsung':{touch:.98,tilt:1.02},
+    'Xiaomi':{touch:1.02,tilt:1.00},'Redmi':{touch:1.00,tilt:1.00},
+    'OPPO':{touch:1.00,tilt:1.01},'vivo':{touch:1.00,tilt:1.01},
+    'realme':{touch:1.00,tilt:1.00},'Huawei':{touch:1.00,tilt:1.00},
+    'HONOR':{touch:1.00,tilt:1.00},'Google Pixel':{touch:.98,tilt:1.00},
+    'OnePlus':{touch:.98,tilt:.98},'Tecno':{touch:1.04,tilt:1.02},
+    'Infinix':{touch:1.04,tilt:1.02},'Khác':{touch:1.00,tilt:1.00}
+  };
+  var S={version:'ff',brand:'Apple',model:'',screenSize:'',
+    refreshRate:120,fpsGame:60,playstyle:'balanced',
+    sens:Object.assign({},DEF),snapshot:null,profiles:[]};
+
+  function $(id){return document.getElementById(id)}
+  function qsa(sel){return Array.prototype.slice.call(document.querySelectorAll(sel))}
+  function clamp(v,min,max){v=Number(v);if(isNaN(v))return min;return Math.max(min,Math.min(max,Math.round(v)))}
+
+  var toastTimer=null;
+  function toast(msg,type){
+    var el=$('toast');if(!el)return;
+    el.textContent=msg;el.className='show'+(type?' '+type:'');
+    clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.className=''},2200);
+  }
+
+  /* SENS SUB-TABS */
+  function initSubTabs(){
+    var tabs=qsa('#sub-sens [data-stab]');
+    tabs.forEach(function(tab){
+      tab.addEventListener('click',function(){
+        tabs.forEach(function(x){x.classList.remove('active')});
+        tab.classList.add('active');
+        qsa('#sub-sens .sub-panel').forEach(function(p){p.classList.remove('active')});
+        var p=$('stab-'+tab.getAttribute('data-stab'));
+        if(p)p.classList.add('active');
+      });
+    });
+  }
+
+  function initVersion(){
+    qsa('.vc').forEach(function(c){
+      c.addEventListener('click',function(){
+        qsa('.vc').forEach(function(x){x.classList.remove('active')});
+        c.classList.add('active');
+        S.version=c.getAttribute('data-version');
+      });
+    });
+  }
+
+  function initForm(){
+    var b=$('brandSelect');if(b)b.addEventListener('change',function(){S.brand=b.value});
+    var m=$('modelInput');if(m)m.addEventListener('input',function(){S.model=m.value.trim()});
+    var ss=$('screenSize');if(ss)ss.addEventListener('input',function(){S.screenSize=ss.value});
+    var rr=$('refreshRate'),crf=$('customRefreshField'),cr=$('customRefresh');
+    if(rr)rr.addEventListener('change',function(){
+      if(rr.value==='custom'){if(crf)crf.style.display='';S.refreshRate=parseInt(cr.value,10)||120}
+      else{if(crf)crf.style.display='none';S.refreshRate=parseInt(rr.value,10)||120}
+    });
+    if(cr)cr.addEventListener('input',function(){S.refreshRate=clamp(cr.value,30,240)});
+    var fg=$('fpsGame');if(fg)fg.addEventListener('change',function(){S.fpsGame=parseInt(fg.value,10)||60});
+    qsa('#playstyleGroup button').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        qsa('#playstyleGroup button').forEach(function(x){x.classList.remove('active')});
+        btn.classList.add('active');
+        S.playstyle=btn.getAttribute('data-playstyle');
+      });
+    });
+  }
+
+  function generateSens(){
+    var baseFF={general:92,redDot:88,scope2x:82,scope4x:76,sniper:62,freeLook:104};
+    var baseFFMAX={general:98,redDot:93,scope2x:86,scope4x:80,sniper:65,freeLook:108};
+    var base=S.version==='ffmax'?baseFFMAX:baseFF;
+    var bp=BRAND_PRESET[S.brand]||BRAND_PRESET['Khác'];
+    var brandTouch=bp.touch,brandTilt=bp.tilt;
+    var rf=S.refreshRate;
+    var rfF=rf<=60?.94:rf<=90?.98:rf<=120?1.00:rf<=144?1.03:1.05;
+    var fps=S.fpsGame;
+    var fpsF=fps<=30?1.10:fps<=60?1.02:fps<=90?.98:.95;
+    var style={
+      rush:{general:1.14,redDot:1.12,scope2x:1.08,scope4x:1.05,sniper:1.00,freeLook:1.15},
+      balanced:{general:1,redDot:1,scope2x:1,scope4x:1,sniper:1,freeLook:1},
+      control:{general:.86,redDot:.88,scope2x:.90,scope4x:.92,sniper:.96,freeLook:.88},
+      sniper:{general:.92,redDot:.94,scope2x:.96,scope4x:.98,sniper:1.12,freeLook:.94}
+    }[S.playstyle]||{general:1,redDot:1,scope2x:1,scope4x:1,sniper:1,freeLook:1};
+    var sz=parseFloat(S.screenSize),szF=1;
+    if(!isNaN(sz)&&sz>0){szF=sz<5.5?1.06:sz<6.5?1:sz<7?.96:.92}
+    var out={};
+    SLIDERS.forEach(function(d){
+      var brandF=(d.id==='scope2x'||d.id==='scope4x'||d.id==='sniper')?brandTilt:brandTouch;
+      var v=base[d.id]*brandF*rfF*fpsF*style[d.id]*szF;
+      out[d.id]=clamp(v,0,200);
+    });
+    return out;
+  }
+
+  function updatePct(input){
+    if(!input)return;
+    var min=parseFloat(input.min)||0,max=parseFloat(input.max)||200;
+    var pct=((parseFloat(input.value)-min)/(max-min))*100;
+    input.style.setProperty('--pct',pct+'%');
+  }
+
+  function renderSliders(){
+    var c=$('slidersContainer');if(!c)return;
+    c.innerHTML='';
+    SLIDERS.forEach(function(d){
+      var row=document.createElement('div');row.className='sr';row.setAttribute('data-id',d.id);
+      var head=document.createElement('div');head.className='sh';
+      var name=document.createElement('div');name.className='sn';
+      name.innerHTML='<span class="ico">'+d.icon+'</span>'+d.name;
+      var val=document.createElement('div');val.className='sv';val.id='val-'+d.id;
+      val.textContent=S.sens[d.id];
+      var ctrl=document.createElement('div');ctrl.className='sc';
+      var minus=document.createElement('button');minus.className='sb';minus.type='button';minus.textContent='−';
+      var plus=document.createElement('button');plus.className='sb';plus.type='button';plus.textContent='+';
+      ctrl.appendChild(minus);ctrl.appendChild(plus);
+      head.appendChild(name);head.appendChild(val);head.appendChild(ctrl);
+      var input=document.createElement('input');
+      input.type='range';input.min=0;input.max=200;input.step=1;
+      input.value=S.sens[d.id];input.id='range-'+d.id;
+      row.appendChild(head);row.appendChild(input);c.appendChild(row);
+      updatePct(input);
+      input.addEventListener('input',function(){
+        var v=clamp(input.value,0,200);S.sens[d.id]=v;val.textContent=v;updatePct(input);
+      });
+      minus.addEventListener('click',function(){
+        var v=clamp(S.sens[d.id]-1,0,200);S.sens[d.id]=v;input.value=v;val.textContent=v;updatePct(input);
+      });
+      plus.addEventListener('click',function(){
+        var v=clamp(S.sens[d.id]+1,0,200);S.sens[d.id]=v;input.value=v;val.textContent=v;updatePct(input);
+      });
+    });
+  }
+
+  function refreshSliders(){
+    SLIDERS.forEach(function(d){
+      var i=$('range-'+d.id),v=$('val-'+d.id);
+      if(i){i.value=S.sens[d.id];updatePct(i)}
+      if(v)v.textContent=S.sens[d.id];
+    });
+  }
+
+  function handleGenerate(){
+    S.sens=generateSens();refreshSliders();
+    toast('Đã tạo cấu hình','success');
+    var t=document.querySelector('#sub-sens [data-stab="tune"]');if(t)t.click();
+  }
+  function handleReset(){
+    S.sens=Object.assign({},DEF);S.snapshot=null;refreshSliders();
+    toast('Đã đặt lại','success');
+  }
+  function handleRandomize(){
+    var rec=generateSens(),out={};
+    SLIDERS.forEach(function(d){
